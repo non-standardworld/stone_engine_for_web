@@ -13,6 +13,8 @@
         font-family: system-ui, sans-serif;
         padding: 20px;
         background: #f5f5f5;
+        max-width: 1400px;
+        margin: 0 auto;
       }
       h1 {
         color: #333;
@@ -33,64 +35,133 @@
         margin-top: 0;
         color: #333;
         font-size: 1.2em;
+        margin-bottom: 15px;
+      }
+      .comparison {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 15px;
+      }
+      .comparison-item {
+        display: flex;
+        flex-direction: column;
+      }
+      .comparison-item h3 {
+        margin: 0 0 10px 0;
+        font-size: 0.9em;
+        color: #666;
+        text-align: center;
+      }
+      .native-label {
+        color: #e53935;
+      }
+      .stone-label {
+        color: #43a047;
       }
       canvas {
         border: 1px solid #ddd;
-        display: block;
-        margin-top: 10px;
         background: white;
       }
+      .native-text {
+        border: 1px solid #ddd;
+        background: white;
+        padding: 10px;
+        font-family: "Noto Serif JP", serif;
+        line-height: 1.8;
+        overflow: auto;
+      }
+      .native-vertical {
+        writing-mode: vertical-rl;
+        height: 500px;
+      }
       .info {
-        margin-top: 10px;
+        margin-top: 15px;
         padding: 10px;
         background: #f9f9f9;
         border-left: 3px solid #4CAF50;
         font-size: 0.9em;
         color: #666;
       }
+      .highlight {
+        background: #fff9c4;
+        padding: 2px 4px;
+        border-radius: 2px;
+      }
     </style>
   </head>
   <body>
-    <h1>🪨 Stone Engine Web</h1>
-    <p class="subtitle">MVP Demo - 横書き日本語テキストレンダリング</p>
+    <h1>🪨 Stone Engine Web - 比較デモ</h1>
+    <p class="subtitle">ブラウザネイティブ vs Stone Engine Web</p>
 
     <div class="demo-section">
-      <h2>デモ1: 基本的な日本語</h2>
-      <canvas id="canvas1" width="800" height="300"></canvas>
+      <h2>デモ1: 禁則処理の比較 - 横書き</h2>
+      <div class="comparison">
+        <div class="comparison-item">
+          <h3 class="native-label">❌ ブラウザネイティブ（禁則なし）</h3>
+          <canvas id="native-canvas1" width="380" height="200"></canvas>
+        </div>
+        <div class="comparison-item">
+          <h3 class="stone-label">✅ Stone Engine Web（禁則処理あり）</h3>
+          <canvas id="stone-canvas1" width="380" height="200"></canvas>
+        </div>
+      </div>
       <div class="info">
-        吾輩は猫である（夏目漱石）- 日本語テキストの基本表示
+        <strong>違いに注目:</strong> 行末に<span class="highlight">「（</span>や行頭に<span class="highlight">）」</span>が来ると不自然。Stone Engineは禁則処理で単語単位で行を折り返します。
       </div>
     </div>
 
     <div class="demo-section">
-      <h2>デモ2: 日本語とLatin混在</h2>
-      <canvas id="canvas2" width="800" height="300"></canvas>
+      <h2>デモ2: 縦書きの比較 - 基本的な日本語</h2>
+      <div class="comparison">
+        <div class="comparison-item">
+          <h3 class="native-label">❌ ブラウザネイティブ（CSS writing-mode）</h3>
+          <div class="native-text native-vertical" style="width: 380px; font-size: 18px;" id="native-text2">
+          </div>
+        </div>
+        <div class="comparison-item">
+          <h3 class="stone-label">✅ Stone Engine Web（TbRl + 禁則）</h3>
+          <canvas id="stone-canvas2" width="380" height="500"></canvas>
+        </div>
+      </div>
       <div class="info">
-        stone_engineの説明文 - 日本語とLatinが混在したテキスト。文字種ごとに適切なフォントが選択されます。
+        <strong>違いに注目:</strong> ブラウザのwriting-modeでは禁則処理が不完全。Stone Engineは日本語組版ルールに完全対応。
       </div>
     </div>
 
     <div class="demo-section">
-      <h2>デモ3: ウィスキーの説明（約物含む）</h2>
-      <canvas id="canvas3" width="800" height="400"></canvas>
+      <h2>デモ3: 縦中横の比較 - 数字の扱い</h2>
+      <div class="comparison">
+        <div class="comparison-item">
+          <h3 class="native-label">❌ ブラウザネイティブ（数字が90度回転）</h3>
+          <div class="native-text native-vertical" style="width: 380px; font-size: 16px;" id="native-text3">
+          </div>
+        </div>
+        <div class="comparison-item">
+          <h3 class="stone-label">✅ Stone Engine Web（縦中横自動適用）</h3>
+          <canvas id="stone-canvas3" width="380" height="400"></canvas>
+        </div>
+      </div>
       <div class="info">
-        括弧や句読点を含むテキスト。MVP版では約物処理は未実装（Phase 1で対応予定）
+        <strong>違いに注目:</strong> <span class="highlight">25</span>のような2桁数字は縦中横で正立表示すると読みやすい。Stone Engineは自動で判定・適用します。
       </div>
     </div>
 
     <div class="demo-section">
-      <h2>デモ4: 縦書き（TbRl）- 基本的な日本語</h2>
-      <canvas id="canvas4" width="400" height="500"></canvas>
-      <div class="info">
-        Phase 1実装: 縦書きレイアウト。日本語文字は正立、Latin文字は90度回転。
+      <h2>デモ4: Latin文字の回転 - 縦書き時の扱い</h2>
+      <div class="comparison">
+        <div class="comparison-item">
+          <h3 class="native-label">❌ ブラウザネイティブ（Latin横向き）</h3>
+          <div class="native-text native-vertical" style="width: 380px; font-size: 16px;" id="native-text4">
+          </div>
+        </div>
+        <div class="comparison-item">
+          <h3 class="stone-label">✅ Stone Engine Web（Latin 90度回転）</h3>
+          <canvas id="stone-canvas4" width="380" height="400"></canvas>
+        </div>
       </div>
-    </div>
-
-    <div class="demo-section">
-      <h2>デモ5: 縦書き - 数字とLatin混在</h2>
-      <canvas id="canvas5" width="500" height="400"></canvas>
       <div class="info">
-        縦中横（2桁数字）とLatin文字の90度回転のテスト。
+        <strong>違いに注目:</strong> <span class="highlight">stone_engine</span>や<span class="highlight">Web</span>のようなLatin文字は縦書き時に90度回転すると読みやすい。
       </div>
     </div>
 
