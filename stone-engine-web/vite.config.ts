@@ -11,6 +11,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         validation: resolve(__dirname, 'validation.html'),
         editor: resolve(__dirname, 'editor.html'),
+        performance: resolve(__dirname, 'performance.html'),
       },
     },
   },

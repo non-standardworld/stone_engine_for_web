@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stone Engine Web - Performance Test (Phase 4)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Serif JP', serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .phase-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+
+    .description {
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .controls {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .control-group {
+      margin-bottom: 15px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #5568d3;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    select,
+    input[type="number"] {
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+      margin-right: 10px;
+    }
+
+    .results {
+      margin-top: 20px;
+    }
+
+    .result-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .result-table th,
+    .result-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .result-table th {
+      background: #f5f5f5;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .result-table tr:hover {
+      background: #f9f9f9;
+    }
+
+    .metric-good {
+      color: #22c55e;
+      font-weight: bold;
+    }
+
+    .metric-warn {
+      color: #f59e0b;
+      font-weight: bold;
+    }
+
+    .metric-bad {
+      color: #ef4444;
+      font-weight: bold;
+    }
+
+    .chart {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    canvas {
+      border: 1px solid #ccc;
+      display: block;
+      margin: 20px auto;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+
+    .stat-card h4 {
+      color: #333;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .stat-card .value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .stat-card .unit {
+      font-size: 0.9rem;
+      color: #666;
+      margin-left: 5px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #667eea;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .log {
+      font-family: monospace;
+      font-size: 0.9rem;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+
+    .log-entry {
+      margin-bottom: 5px;
+    }
+
+    .log-entry.info {
+      color: #4fc3f7;
+    }
+
+    .log-entry.success {
+      color: #81c784;
+    }
+
+    .log-entry.warn {
+      color: #ffb74d;
+    }
+
+    .log-entry.error {
+      color: #e57373;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Stone Engine Web - Performance Test</h1>
+      <p class="subtitle">Phase 4: パフォーマンス最適化の検証</p>
+      <div class="phase-badge">Phase 4: Optimization</div>
+    </header>
+
+    <div class="section">
+      <h2>テスト1: 文字数別パフォーマンス</h2>
+      <div class="description">
+        異なる文字数でのparse, layout, render時間を計測します。
+        目標: 1000文字 &lt; 50ms (parse+layout+render)
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>テキストサイズ:</label>
+          <select id="text-size">
+            <option value="100">100文字</option>
+            <option value="500">500文字</option>
+            <option value="1000" selected>1000文字</option>
+            <option value="2000">2000文字</option>
+            <option value="5000">5000文字</option>
+          </select>
+          <button onclick="runCharCountTest()">実行</button>
+        </div>
+      </div>
+
+      <div class="results" id="test1-results" style="display: none;">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>文字数</th>
+              <th>Parse時間</th>
+              <th>Layout時間</th>
+              <th>Render時間</th>
+              <th>合計時間</th>
+              <th>評価</th>
+            </tr>
+          </thead>
+          <tbody id="test1-tbody"></tbody>
+        </table>
+      </div>
+
+      <canvas id="test1-canvas" width="800" height="400" style="display:none;"></canvas>
+    </div>
+
+    <div class="section">
+      <h2>テスト2: キャッシュ効果の検証</h2>
+      <div class="description">
+        TextMetricsCacheのヒット率と効果を検証します。
+        1回目（キャッシュミス）と2回目（キャッシュヒット）の速度差を測定します。
+      </div>
+
+      <div class="controls">
+        <button onclick="runCacheTest()">実行</button>
+      </div>
+
+      <div class="stats" id="cache-stats" style="display: none;">
+        <div class="stat-card">
+          <h4>1回目（コールド）</h4>
+          <div class="value" id="cache-cold-time">-</div>
+          <span class="unit">ms</span>
+        </div>
+        <div class="stat-card">
+          <h4>2回目（ウォーム）</h4>
+          <div class="value" id="cache-warm-time">-</div>
+          <span class="unit">ms</span>
+        </div>
+        <div class="stat-card">
+          <h4>高速化率</h4>
+          <div class="value" id="cache-speedup">-</div>
+          <span class="unit">x</span>
+        </div>
+        <div class="stat-card">
+          <h4>キャッシュヒット率</h4>
+          <div class="value" id="cache-hit-rate">-</div>
+          <span class="unit">%</span>
+        </div>
+      </div>
+
+      <canvas id="test2-canvas" width="800" height="300" style="display:none;"></canvas>
+    </div>
+
+    <div class="section">
+      <h2>テスト3: 連続レンダリングベンチマーク</h2>
+      <div class="description">
+        同じテキストを連続でレンダリングして平均時間を計測します。
+        実際の使用環境でのパフォーマンスを評価します。
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>反復回数:</label>
+          <input type="number" id="repeat-count" value="100" min="10" max="1000">
+          <button onclick="runRepeatTest()" id="repeat-btn">実行</button>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" id="repeat-progress"></div>
+        </div>
+      </div>
+
+      <div class="stats" id="repeat-stats" style="display: none;">
+        <div class="stat-card">
+          <h4>平均時間</h4>
+          <div class="value" id="repeat-avg">-</div>
+          <span class="unit">ms</span>
+        </div>
+        <div class="stat-card">
+          <h4>最小時間</h4>
+          <div class="value" id="repeat-min">-</div>
+          <span class="unit">ms</span>
+        </div>
+        <div class="stat-card">
+          <h4>最大時間</h4>
+          <div class="value" id="repeat-max">-</div>
+          <span class="unit">ms</span>
+        </div>
+        <div class="stat-card">
+          <h4>標準偏差</h4>
+          <div class="value" id="repeat-std">-</div>
+          <span class="unit">ms</span>
+        </div>
+      </div>
+
+      <canvas id="test3-canvas" width="800" height="300" style="display:none;"></canvas>
+    </div>
+
+    <div class="section">
+      <h2>テスト4: 総合ベンチマーク</h2>
+      <div class="description">
+        すべてのテストを実行して、Phase 4の最適化効果を総合的に評価します。
+      </div>
+
+      <div class="controls">
+        <button onclick="runAllTests()" id="all-tests-btn">全テスト実行</button>
+      </div>
+
+      <div class="log" id="benchmark-log" style="display: none;"></div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/performance-test.ts"></script>
+</body>
+</html>
