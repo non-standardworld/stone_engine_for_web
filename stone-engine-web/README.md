@@ -26,6 +26,22 @@ npm run build
 
 ビルド成果物は `dist/` ディレクトリに出力されます。
 
+## 🌐 GitHub Pagesデプロイ
+
+デモページはGitHub Pagesで公開されています：
+
+**URL:** https://non-standardworld.github.io/stone_engine_for_web/
+
+### 自動デプロイ
+
+`main`ブランチにpushすると、GitHub Actionsが自動的にビルド＆デプロイします。
+
+### 手動デプロイ
+
+1. GitHubリポジトリの「Settings」→「Pages」を開く
+2. Source: 「GitHub Actions」を選択
+3. mainブランチにpush、またはActionsタブから「Deploy to GitHub Pages」を手動実行
+
 ## 📦 プロジェクト構成
 
 ```

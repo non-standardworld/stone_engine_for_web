@@ -1,5 +1,15 @@
 stone_engineは、日本語の文字組版を実現する、テキストレンダリングエンジンである。
 
+## 🌐 Web版デモ
+
+**Stone Engine Web (MVP)** が公開されています！
+
+👉 **[デモページを見る](https://non-standardworld.github.io/stone_engine_for_web/)**
+
+Web版の実装は [`stone-engine-web/`](stone-engine-web/) ディレクトリにあります。
+
+---
+
 ## 目的
 
 stone_engineは、iOS上で動作するテキストレンダリングエンジンである。
