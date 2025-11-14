@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stone Engine Web - MVP Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+      }
+      .demo-section {
+        background: white;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .demo-section h2 {
+        margin-top: 0;
+        color: #333;
+        font-size: 1.2em;
+      }
+      canvas {
+        border: 1px solid #ddd;
+        display: block;
+        margin-top: 10px;
+        background: white;
+      }
+      .info {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f9f9f9;
+        border-left: 3px solid #4CAF50;
+        font-size: 0.9em;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🪨 Stone Engine Web</h1>
+    <p class="subtitle">MVP Demo - 横書き日本語テキストレンダリング</p>
+
+    <div class="demo-section">
+      <h2>デモ1: 基本的な日本語</h2>
+      <canvas id="canvas1" width="800" height="300"></canvas>
+      <div class="info">
+        吾輩は猫である（夏目漱石）- 日本語テキストの基本表示
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>デモ2: 日本語とLatin混在</h2>
+      <canvas id="canvas2" width="800" height="300"></canvas>
+      <div class="info">
+        stone_engineの説明文 - 日本語とLatinが混在したテキスト。文字種ごとに適切なフォントが選択されます。
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>デモ3: ウィスキーの説明（約物含む）</h2>
+      <canvas id="canvas3" width="800" height="400"></canvas>
+      <div class="info">
+        括弧や句読点を含むテキスト。MVP版では約物処理は未実装（Phase 1で対応予定）
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
