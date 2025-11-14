@@ -7,13 +7,18 @@
 
 import { Context } from '../core/Context';
 import { UnicodeUtils } from '../utils/UnicodeUtils';
+import { KinsokuEngine } from '../kinsoku/KinsokuEngine';
 
 export class LayoutLrTb {
   private x: number = 0;
   private y: number = 0;
   private lineNumber: number = 0;
+  private lineStartRunId: number = 0;
+  private kinsokuEngine: KinsokuEngine;
 
-  constructor(private context: Context) {}
+  constructor(private context: Context) {
+    this.kinsokuEngine = new KinsokuEngine(context);
+  }
 
   /**
    * レイアウトを実行
@@ -23,13 +28,14 @@ export class LayoutLrTb {
     this.x = 0;
     this.y = this.context.fontSize;
     this.lineNumber = 0;
+    this.lineStartRunId = 0;
 
     for (let i = 0; i < this.context.runs.length; i++) {
       const run = this.context.runs[i];
 
       // 改行処理
       if (UnicodeUtils.isNewline(run.char)) {
-        this.newLine();
+        this.newLine(i);
         run.line = this.lineNumber;
         // 改行文字は位置だけ設定（幅0）
         run.position = { x: this.x, y: this.y };
@@ -44,7 +50,44 @@ export class LayoutLrTb {
 
       // 行折り返し判定
       if (this.x + run.advance.width > this.context.renderSize.width) {
-        this.newLine();
+        // 禁則処理を適用
+        const adjustedRunId = this.kinsokuEngine.process(this.lineStartRunId, i - 1);
+
+        // 調整されたRunIdまでレイアウト、残りは次の行へ
+        this.layoutCurrentLine(this.lineStartRunId, adjustedRunId);
+        this.newLine(adjustedRunId);
+
+        // iを調整して、次の行の最初から再レイアウト
+        i = adjustedRunId;
+        continue;
+      }
+
+      // 位置とフレームを設定
+      run.position = { x: this.x, y: this.y };
+      run.frame = {
+        x: this.x,
+        y: this.y - this.context.fontSize,
+        width: run.advance.width,
+        height: this.context.fontSize,
+      };
+      run.line = this.lineNumber;
+
+      // X座標を進める
+      this.x += run.advance.width;
+    }
+  }
+
+  /**
+   * 現在の行をレイアウト（禁則処理適用後）
+   */
+  private layoutCurrentLine(startRunId: number, endRunId: number): void {
+    this.x = 0;
+    for (let i = startRunId; i <= endRunId; i++) {
+      const run = this.context.runs[i];
+
+      // 改行はスキップ
+      if (UnicodeUtils.isNewline(run.char)) {
+        continue;
       }
 
       // 位置とフレームを設定
@@ -65,9 +108,10 @@ export class LayoutLrTb {
   /**
    * 改行処理
    */
-  private newLine(): void {
+  private newLine(currentRunId: number): void {
     this.x = 0;
     this.y += this.context.lineHeightPx;
     this.lineNumber++;
+    this.lineStartRunId = currentRunId + 1;
   }
 }
