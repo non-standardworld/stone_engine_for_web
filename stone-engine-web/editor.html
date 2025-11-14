@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stone Engine Web - Editor Demo (Phase 3)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Serif JP', serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .phase-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+
+    .description {
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .editor-container {
+      margin: 20px 0;
+    }
+
+    .editor-label {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .features {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .features h3 {
+      color: #667eea;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .features ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .features li {
+      padding: 5px 0;
+      color: #555;
+    }
+
+    .features li::before {
+      content: "✓ ";
+      color: #667eea;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .controls {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .control-group {
+      margin-bottom: 15px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #5568d3;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    select {
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+      margin-right: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .info {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #2196f3;
+      margin-top: 20px;
+    }
+
+    .info h4 {
+      color: #1976d2;
+      margin-bottom: 10px;
+    }
+
+    .info p {
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .status {
+      font-family: monospace;
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Stone Engine Web - Editor Demo</h1>
+      <p class="subtitle">編集可能なテキストビュー</p>
+      <div class="phase-badge">Phase 3: UI/UX・エディター機能</div>
+    </header>
+
+    <div class="section">
+      <h2>デモ1: 横書き編集 (LrTb)</h2>
+      <div class="description">
+        クリックしてテキストを編集できます。日本語IME、矢印キー、Backspace/Delete、コピー&ペーストに対応しています。
+      </div>
+
+      <div class="features">
+        <h3>実装済み機能</h3>
+        <ul>
+          <li>日本語IME対応（compositionイベント処理）</li>
+          <li>カーソル移動（矢印キー、Home/End、クリック）</li>
+          <li>テキスト編集（挿入、削除、改行）</li>
+          <li>コピー&ペースト</li>
+          <li>禁則処理・約物処理との統合</li>
+        </ul>
+      </div>
+
+      <div class="editor-container">
+        <span class="editor-label">編集エリア（横書き）:</span>
+        <div id="editor1"></div>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>テキスト操作:</label>
+          <button onclick="clearText1()">クリア</button>
+          <button onclick="loadSample1()">サンプルテキストを読み込み</button>
+          <button onclick="showText1()">テキストを表示</button>
+        </div>
+      </div>
+
+      <div class="status" id="status1">
+        カーソル位置: 0 / 文字数: 0
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>デモ2: 縦書き編集 (TbRl)</h2>
+      <div class="description">
+        縦書きモードでもテキスト編集が可能です。カーソルは横線で表示されます。
+      </div>
+
+      <div class="editor-container">
+        <span class="editor-label">編集エリア（縦書き）:</span>
+        <div id="editor2"></div>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>テキスト操作:</label>
+          <button onclick="clearText2()">クリア</button>
+          <button onclick="loadSample2()">サンプルテキストを読み込み</button>
+          <button onclick="showText2()">テキストを表示</button>
+        </div>
+      </div>
+
+      <div class="status" id="status2">
+        カーソル位置: 0 / 文字数: 0
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>デモ3: ライブ編集比較</h2>
+      <div class="description">
+        左側で編集した内容が、右側にリアルタイムで反映されます。
+      </div>
+
+      <div class="grid">
+        <div>
+          <span class="editor-label">編集エリア:</span>
+          <div id="editor3"></div>
+        </div>
+        <div>
+          <span class="editor-label">リアルタイムプレビュー:</span>
+          <canvas id="preview-canvas" width="500" height="400" style="border: 1px solid #ccc; display: block;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="info">
+        <h4>使い方</h4>
+        <p>
+          編集エリアをクリックしてフォーカスしてから、テキストを入力できます。
+          日本語IMEを使った変換、矢印キーでのカーソル移動、Backspace/Deleteでの削除、
+          Ctrl+V（またはCmd+V）でのペーストに対応しています。
+        </p>
+        <p style="margin-top: 10px;">
+          <strong>実装されている機能:</strong><br>
+          ✓ IME統合（compositionstart/compositionend）<br>
+          ✓ カーソル描画（横書き: 縦線、縦書き: 横線）<br>
+          ✓ テキスト挿入・削除<br>
+          ✓ 矢印キーナビゲーション<br>
+          ✓ クリップボード対応
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { TextView } from './src/index.ts';
+    import { StoneLabel } from './src/index.ts';
+
+    // デモ1: 横書き編集
+    const editor1 = new TextView(document.getElementById('editor1'), {
+      width: 800,
+      height: 300,
+      fontSize: 18,
+      lineHeight: 1.8,
+      direction: 'lrTb'
+    });
+
+    editor1.setText('ここをクリックして編集してください。\n日本語IME、矢印キー、削除が使えます。');
+    editor1.render();
+
+    // ステータス更新
+    function updateStatus1() {
+      const text = editor1.getText();
+      const cursor = editor1.getCursorPosition();
+      document.getElementById('status1').textContent =
+        `カーソル位置: ${cursor} / 文字数: ${text.length}`;
+    }
+
+    // 定期的にステータスを更新
+    setInterval(updateStatus1, 100);
+
+    window.clearText1 = () => {
+      editor1.setText('');
+      editor1.render();
+    };
+
+    window.loadSample1 = () => {
+      editor1.setText(`吾輩は猫である。名前はまだ無い。
+
+どこで生れたかとんと見当がつかぬ。何でも薄暗いじめじめした所でニャーニャー泣いていた事だけは記憶している。
+
+吾輩はここで始めて人間というものを見た。`);
+      editor1.render();
+    };
+
+    window.showText1 = () => {
+      alert(editor1.getText());
+    };
+
+    // デモ2: 縦書き編集
+    const editor2 = new TextView(document.getElementById('editor2'), {
+      width: 400,
+      height: 500,
+      fontSize: 18,
+      lineHeight: 1.8,
+      direction: 'tbRl'
+    });
+
+    editor2.setText('縦書きで編集できます。\n日本語の美しい組版を\nお楽しみください。');
+    editor2.render();
+
+    function updateStatus2() {
+      const text = editor2.getText();
+      const cursor = editor2.getCursorPosition();
+      document.getElementById('status2').textContent =
+        `カーソル位置: ${cursor} / 文字数: ${text.length}`;
+    }
+
+    setInterval(updateStatus2, 100);
+
+    window.clearText2 = () => {
+      editor2.setText('');
+      editor2.render();
+    };
+
+    window.loadSample2 = () => {
+      editor2.setText(`石のエンジンは、
+日本語の高度な組版を実現する、
+テキストレンダリングエンジンである。
+
+縦書き、禁則処理、約物処理、
+文字種ごとのスケーリングを
+実現する。`);
+      editor2.render();
+    };
+
+    window.showText2 = () => {
+      alert(editor2.getText());
+    };
+
+    // デモ3: ライブ編集比較
+    const editor3 = new TextView(document.getElementById('editor3'), {
+      width: 500,
+      height: 400,
+      fontSize: 16,
+      lineHeight: 1.8,
+      direction: 'lrTb'
+    });
+
+    const preview = new StoneLabel({
+      width: 500,
+      height: 400,
+      fontSize: 16,
+      lineHeight: 1.8,
+      direction: 'lrTb'
+    });
+
+    editor3.setText('ここで編集すると、右側にリアルタイムで反映されます。\n\n日本語の美しい組版をお試しください。');
+    editor3.render();
+
+    const previewCanvas = document.getElementById('preview-canvas');
+    preview.setText(editor3.getText());
+    preview.render(previewCanvas);
+
+    // プレビューを定期的に更新
+    setInterval(() => {
+      const text = editor3.getText();
+      preview.setText(text);
+      preview.render(previewCanvas);
+    }, 200);
+  </script>
+</body>
+</html>
