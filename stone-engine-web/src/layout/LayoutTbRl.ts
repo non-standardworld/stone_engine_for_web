@@ -8,6 +8,7 @@
 import { Context } from '../core/Context';
 import { UnicodeUtils } from '../utils/UnicodeUtils';
 import { KinsokuEngine } from '../kinsoku/KinsokuEngine';
+import { PunctuationEngine } from '../punctuation/PunctuationEngine';
 
 export class LayoutTbRl {
   private x: number;
@@ -15,17 +16,22 @@ export class LayoutTbRl {
   private lineNumber: number = 0;
   private lineStartRunId: number = 0;
   private kinsokuEngine: KinsokuEngine;
+  private punctuationEngine: PunctuationEngine;
 
   constructor(private context: Context) {
     // 右端から開始
     this.x = context.renderSize.width - context.fontSize;
     this.kinsokuEngine = new KinsokuEngine(context);
+    this.punctuationEngine = new PunctuationEngine(context);
   }
 
   /**
    * レイアウトを実行
    */
   layout(): void {
+    // 約物処理を適用
+    this.punctuationEngine.process();
+
     // 初期化
     this.x = this.context.renderSize.width - this.context.fontSize;
     this.y = 0;

@@ -8,6 +8,7 @@
 import { Context } from '../core/Context';
 import { Run } from '../core/Types';
 import { UnicodeUtils } from '../utils/UnicodeUtils';
+import { Punctuation } from '../punctuation/PunctuationEngine';
 
 export class Parser {
   constructor(private context: Context) {}
@@ -65,6 +66,10 @@ export class Parser {
       frame: { x: 0, y: 0, width: 0, height: 0 }, // layoutで設定
       line: 0, // layoutで設定
       tokenId,
+      // 約物タイプを設定
+      punctuationType: Punctuation.getPunctuationType(char),
+      punctuationOffset: 0,
+      punctuationScale: 1.0,
     };
   }
 
