@@ -2,3 +2,6 @@ stone.xcodeproj/project.xcworkspace/xcuserdata
 stone.xcodeproj/xcuserdata
 .DS_Store
 .build
+
+# GitHub workflows (require manual commit due to permissions)
+.github/workflows/
