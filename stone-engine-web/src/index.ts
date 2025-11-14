@@ -8,8 +8,10 @@
 import { Context } from './core/Context';
 import { Parser } from './parser/Parser';
 import { LayoutLrTb } from './layout/LayoutLrTb';
+import { LayoutTbRl } from './layout/LayoutTbRl';
 import { CanvasRenderer } from './renderer/CanvasRenderer';
 import type { Direction, TextAlign, Size } from './core/Types';
+import { Direction as DirectionEnum } from './core/Types';
 
 export interface StoneLabelConfig {
   fontSize?: number;
@@ -23,7 +25,8 @@ export interface StoneLabelConfig {
 export class StoneLabel {
   private context: Context;
   private parser: Parser;
-  private layout: LayoutLrTb;
+  private layoutLrTb: LayoutLrTb;
+  private layoutTbRl: LayoutTbRl;
   private renderer: CanvasRenderer;
 
   constructor(config?: StoneLabelConfig) {
@@ -52,7 +55,8 @@ export class StoneLabel {
     }
 
     this.parser = new Parser(this.context);
-    this.layout = new LayoutLrTb(this.context);
+    this.layoutLrTb = new LayoutLrTb(this.context);
+    this.layoutTbRl = new LayoutTbRl(this.context);
     this.renderer = new CanvasRenderer(this.context);
   }
 
@@ -61,7 +65,13 @@ export class StoneLabel {
    */
   setText(text: string): void {
     this.parser.parse(text);
-    this.layout.layout();
+
+    // 方向に応じてレイアウトエンジンを切り替え
+    if (this.context.direction === DirectionEnum.TbRl) {
+      this.layoutTbRl.layout();
+    } else {
+      this.layoutLrTb.layout();
+    }
   }
 
   /**
@@ -97,7 +107,12 @@ export class StoneLabel {
    */
   setRenderSize(size: Size): void {
     this.context.renderSize = size;
-    this.layout.layout(); // 再レイアウト
+    // 再レイアウト（現在の方向に応じてレイアウトエンジンを選択）
+    if (this.context.direction === DirectionEnum.TbRl) {
+      this.layoutTbRl.layout();
+    } else {
+      this.layoutLrTb.layout();
+    }
   }
 }
 

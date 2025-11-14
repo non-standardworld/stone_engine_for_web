@@ -6,6 +6,7 @@
  */
 
 import { Context } from '../core/Context';
+import { Direction } from '../core/Types';
 import { UnicodeUtils } from '../utils/UnicodeUtils';
 
 export class CanvasRenderer {
@@ -26,7 +27,8 @@ export class CanvasRenderer {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // テキスト描画設定
-    ctx.textBaseline = 'alphabetic';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
 
     for (const run of this.context.runs) {
       // 改行はスキップ
@@ -43,9 +45,46 @@ export class CanvasRenderer {
       // テキスト色
       ctx.fillStyle = '#000000';
 
-      // 描画
+      // 縦書きの場合はLatin文字を回転
+      if (this.context.direction === Direction.TbRl) {
+        this.renderVertical(ctx, run);
+      } else {
+        this.renderHorizontal(ctx, run);
+      }
+    }
+  }
+
+  /**
+   * 横書き描画
+   */
+  private renderHorizontal(ctx: CanvasRenderingContext2D, run: any): void {
+    ctx.save();
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+    ctx.fillText(run.char, run.position.x, run.position.y);
+    ctx.restore();
+  }
+
+  /**
+   * 縦書き描画
+   */
+  private renderVertical(ctx: CanvasRenderingContext2D, run: any): void {
+    const script = UnicodeUtils.getScript(run.char);
+    const isLatin = script === 0; // Script.Latin
+
+    ctx.save();
+
+    if (isLatin && !/\d/.test(run.char)) {
+      // Latin文字（数字以外）は90度回転
+      ctx.translate(run.position.x, run.position.y);
+      ctx.rotate(Math.PI / 2);
+      ctx.fillText(run.char, 0, 0);
+    } else {
+      // 日本語、Emoji、数字（縦中横）はそのまま
       ctx.fillText(run.char, run.position.x, run.position.y);
     }
+
+    ctx.restore();
   }
 
   /**

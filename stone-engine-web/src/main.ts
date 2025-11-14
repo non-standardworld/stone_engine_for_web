@@ -4,7 +4,7 @@
  * Stone Engine Web - Demo application
  */
 
-import { createLabel } from './index';
+import { createLabel, StoneLabel, Direction } from './index';
 
 // デモ1: 基本的な日本語
 const canvas1 = document.getElementById('canvas1') as HTMLCanvasElement;
@@ -52,6 +52,46 @@ if (canvas3) {
   });
 }
 
-console.log('Stone Engine Web MVP Demo loaded!');
-console.log('MVP機能: 横書き日本語、基本的なフォント選択、自動改行');
-console.log('Phase 1予定: 縦書き、禁則処理、約物処理');
+// デモ4: 縦書き - 基本的な日本語
+const canvas4 = document.getElementById('canvas4') as HTMLCanvasElement;
+if (canvas4) {
+  const text4 = `吾輩は猫である。名前はまだ無い。
+
+どこで生れたかとんと見当がつかぬ。
+
+何でも薄暗いじめじめした所でニャーニャー泣いていた事だけは記憶している。`;
+
+  const label4 = new StoneLabel({
+    width: canvas4.width,
+    height: canvas4.height,
+    fontSize: 18,
+    lineHeight: 1.8,
+    direction: Direction.TbRl,
+  });
+  label4.setText(text4);
+  label4.render(canvas4);
+}
+
+// デモ5: 縦書き - 数字とLatin混在
+const canvas5 = document.getElementById('canvas5') as HTMLCanvasElement;
+if (canvas5) {
+  const text5 = `吾輩は猫である、と1234年に書かれた。
+
+stone_engineは25個のモジュールで構成されている。
+
+Webで動くテキストエンジンである。`;
+
+  const label5 = new StoneLabel({
+    width: canvas5.width,
+    height: canvas5.height,
+    fontSize: 16,
+    lineHeight: 1.8,
+    direction: Direction.TbRl,
+  });
+  label5.setText(text5);
+  label5.render(canvas5);
+}
+
+console.log('Stone Engine Web Demo loaded!');
+console.log('実装済み: 横書き（LrTb）、縦書き（TbRl）、基本的なフォント選択、自動改行');
+console.log('Phase 1進行中: 禁則処理、約物処理');
