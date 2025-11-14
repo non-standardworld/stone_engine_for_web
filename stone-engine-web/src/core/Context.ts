@@ -21,6 +21,9 @@ export class Context {
   textAlign: TextAlign = TextAlignEnum.Leading;
   renderSize: Size = { width: 800, height: 600 };
 
+  // 高度な組版設定
+  isKinsokuAvailable: boolean = true; // 禁則処理を有効にするか
+
   // フォント管理
   fontManager: FontManager;
 

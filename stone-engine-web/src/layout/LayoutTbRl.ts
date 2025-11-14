@@ -7,15 +7,19 @@
 
 import { Context } from '../core/Context';
 import { UnicodeUtils } from '../utils/UnicodeUtils';
+import { KinsokuEngine } from '../kinsoku/KinsokuEngine';
 
 export class LayoutTbRl {
   private x: number;
   private y: number = 0;
   private lineNumber: number = 0;
+  private lineStartRunId: number = 0;
+  private kinsokuEngine: KinsokuEngine;
 
   constructor(private context: Context) {
     // 右端から開始
     this.x = context.renderSize.width - context.fontSize;
+    this.kinsokuEngine = new KinsokuEngine(context);
   }
 
   /**
@@ -26,13 +30,14 @@ export class LayoutTbRl {
     this.x = this.context.renderSize.width - this.context.fontSize;
     this.y = 0;
     this.lineNumber = 0;
+    this.lineStartRunId = 0;
 
     for (let i = 0; i < this.context.runs.length; i++) {
       const run = this.context.runs[i];
 
       // 改行処理
       if (UnicodeUtils.isNewline(run.char)) {
-        this.newLine();
+        this.newLine(i);
         run.line = this.lineNumber;
         // 改行文字は位置だけ設定（高さ0）
         run.position = { x: this.x, y: this.y };
@@ -53,7 +58,16 @@ export class LayoutTbRl {
 
       // 行折り返し判定（下方向）
       if (this.y + run.advance.height > this.context.renderSize.height) {
-        this.newLine();
+        // 禁則処理を適用
+        const adjustedRunId = this.kinsokuEngine.process(this.lineStartRunId, i - 1);
+
+        // 調整されたRunIdまでレイアウト、残りは次の行へ
+        this.layoutCurrentLine(this.lineStartRunId, adjustedRunId);
+        this.newLine(adjustedRunId);
+
+        // iを調整して、次の行の最初から再レイアウト
+        i = adjustedRunId;
+        continue;
       }
 
       // 位置とフレームを設定
@@ -75,12 +89,50 @@ export class LayoutTbRl {
   }
 
   /**
+   * 現在の行をレイアウト（禁則処理適用後）
+   */
+  private layoutCurrentLine(startRunId: number, endRunId: number): void {
+    this.y = 0;
+    for (let i = startRunId; i <= endRunId; i++) {
+      const run = this.context.runs[i];
+
+      // 改行はスキップ
+      if (UnicodeUtils.isNewline(run.char)) {
+        continue;
+      }
+
+      // 縦中横の場合
+      if (this.isTateChuYoko(i)) {
+        this.layoutTateChuYoko(i);
+        continue;
+      }
+
+      // 位置とフレームを設定
+      run.position = {
+        x: this.x + this.context.fontSize / 2,
+        y: this.y + run.advance.height / 2,
+      };
+      run.frame = {
+        x: this.x,
+        y: this.y,
+        width: this.context.fontSize,
+        height: run.advance.height,
+      };
+      run.line = this.lineNumber;
+
+      // Y座標を進める
+      this.y += run.advance.height;
+    }
+  }
+
+  /**
    * 改行処理（左方向に移動）
    */
-  private newLine(): void {
+  private newLine(currentRunId: number): void {
     this.y = 0;
     this.x -= this.context.lineHeightPx;
     this.lineNumber++;
+    this.lineStartRunId = currentRunId + 1;
   }
 
   /**
