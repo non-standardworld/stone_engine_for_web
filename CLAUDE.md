@@ -366,12 +366,13 @@ Text String → STParser → [STRun] → STLayout → Positioned Runs → Render
 
 ## Important Notes
 
-1. **No Test Suite** - Changes must be tested manually in sample app
-2. **Performance First** - Speed is the top priority per project philosophy
-3. **Japanese Focus** - All features designed for Japanese typography first
-4. **Direct Access** - Library exposes internal structures intentionally
-5. **Open for Extension** - Classes marked `open` for subclassing
-6. **Zero Dependencies** - Keep it that way (only Apple frameworks)
+1. **Communication Language** - Always communicate with the user in Japanese (日本語で会話すること)
+2. **No Test Suite** - Changes must be tested manually in sample app
+3. **Performance First** - Speed is the top priority per project philosophy
+4. **Japanese Focus** - All features designed for Japanese typography first
+5. **Direct Access** - Library exposes internal structures intentionally
+6. **Open for Extension** - Classes marked `open` for subclassing
+7. **Zero Dependencies** - Keep it that way (only Apple frameworks)
 
 ## Recent Development Focus
 
