@@ -79,6 +79,11 @@ export interface Run {
   // メタ情報
   line: number;
   tokenId: number;
+
+  // 約物処理
+  punctuationType?: PunctuationType;
+  punctuationOffset?: number;  // 約物の位置オフセット
+  punctuationScale?: number;   // 約物のスケール（0.5 = 半角）
 }
 
 /**

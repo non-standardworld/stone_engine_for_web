@@ -5,8 +5,8 @@
  * STContext相当
  */
 
-import type { Run, Token, Direction, Size, TextAlign } from './Types';
-import { Direction as DirectionEnum, TextAlign as TextAlignEnum } from './Types';
+import type { Run, Token, Direction, Size, TextAlign, PunctuationMode } from './Types';
+import { Direction as DirectionEnum, TextAlign as TextAlignEnum, PunctuationMode as PunctuationModeEnum } from './Types';
 import { FontManager } from '../font/FontManager';
 
 export class Context {
@@ -23,6 +23,7 @@ export class Context {
 
   // 高度な組版設定
   isKinsokuAvailable: boolean = true; // 禁則処理を有効にするか
+  punctuationMode: PunctuationMode = PunctuationModeEnum.Stone; // 約物処理モード
 
   // フォント管理
   fontManager: FontManager;

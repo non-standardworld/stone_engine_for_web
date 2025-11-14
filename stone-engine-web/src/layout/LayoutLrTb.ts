@@ -8,6 +8,7 @@
 import { Context } from '../core/Context';
 import { UnicodeUtils } from '../utils/UnicodeUtils';
 import { KinsokuEngine } from '../kinsoku/KinsokuEngine';
+import { PunctuationEngine } from '../punctuation/PunctuationEngine';
 
 export class LayoutLrTb {
   private x: number = 0;
@@ -15,15 +16,20 @@ export class LayoutLrTb {
   private lineNumber: number = 0;
   private lineStartRunId: number = 0;
   private kinsokuEngine: KinsokuEngine;
+  private punctuationEngine: PunctuationEngine;
 
   constructor(private context: Context) {
     this.kinsokuEngine = new KinsokuEngine(context);
+    this.punctuationEngine = new PunctuationEngine(context);
   }
 
   /**
    * レイアウトを実行
    */
   layout(): void {
+    // 約物処理を適用
+    this.punctuationEngine.process();
+
     // 初期化
     this.x = 0;
     this.y = this.context.fontSize;
@@ -48,8 +54,12 @@ export class LayoutLrTb {
         continue;
       }
 
+      // 約物処理適用後の幅を計算
+      const adjustedWidth = this.punctuationEngine.getAdjustedWidth(run, run.advance.width);
+      const adjustedX = this.punctuationEngine.getAdjustedPositionX(run, this.x, this.context.fontSize);
+
       // 行折り返し判定
-      if (this.x + run.advance.width > this.context.renderSize.width) {
+      if (this.x + adjustedWidth > this.context.renderSize.width) {
         // 禁則処理を適用
         const adjustedRunId = this.kinsokuEngine.process(this.lineStartRunId, i - 1);
 
@@ -63,17 +73,17 @@ export class LayoutLrTb {
       }
 
       // 位置とフレームを設定
-      run.position = { x: this.x, y: this.y };
+      run.position = { x: adjustedX, y: this.y };
       run.frame = {
-        x: this.x,
+        x: adjustedX,
         y: this.y - this.context.fontSize,
-        width: run.advance.width,
+        width: adjustedWidth,
         height: this.context.fontSize,
       };
       run.line = this.lineNumber;
 
       // X座標を進める
-      this.x += run.advance.width;
+      this.x += adjustedWidth;
     }
   }
 
@@ -90,18 +100,22 @@ export class LayoutLrTb {
         continue;
       }
 
+      // 約物処理適用後の幅を計算
+      const adjustedWidth = this.punctuationEngine.getAdjustedWidth(run, run.advance.width);
+      const adjustedX = this.punctuationEngine.getAdjustedPositionX(run, this.x, this.context.fontSize);
+
       // 位置とフレームを設定
-      run.position = { x: this.x, y: this.y };
+      run.position = { x: adjustedX, y: this.y };
       run.frame = {
-        x: this.x,
+        x: adjustedX,
         y: this.y - this.context.fontSize,
-        width: run.advance.width,
+        width: adjustedWidth,
         height: this.context.fontSize,
       };
       run.line = this.lineNumber;
 
       // X座標を進める
-      this.x += run.advance.width;
+      this.x += adjustedWidth;
     }
   }
 

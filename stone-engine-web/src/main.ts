@@ -139,6 +139,27 @@ if (stoneCanvas4) {
   label4.render(stoneCanvas4);
 }
 
+// デモ5: 約物処理の比較
+const text5 = `「これは」テストです。「約物処理」により、「。」や「、」の幅が調整されます。`;
+
+const nativeCanvas5 = document.getElementById('native-canvas5') as HTMLCanvasElement;
+if (nativeCanvas5) {
+  renderNativeCanvas(nativeCanvas5, text5, 16, 1.8);
+}
+
+const stoneCanvas5 = document.getElementById('stone-canvas5') as HTMLCanvasElement;
+if (stoneCanvas5) {
+  const label5 = new StoneLabel({
+    width: stoneCanvas5.width,
+    height: stoneCanvas5.height,
+    fontSize: 16,
+    lineHeight: 1.8,
+    // punctuationMode: 'stone' がデフォルト
+  });
+  label5.setText(text5);
+  label5.render(stoneCanvas5);
+}
+
 console.log('Stone Engine Web Comparison Demo loaded!');
-console.log('✅ 実装済み: 横書き（LrTb）、縦書き（TbRl）、禁則処理、縦中横、Latin回転');
+console.log('✅ 実装済み: 横書き（LrTb）、縦書き（TbRl）、禁則処理、縦中横、Latin回転、約物処理（Stone Mode）');
 console.log('📊 比較: ネイティブレンダリング vs Stone Engine Web');

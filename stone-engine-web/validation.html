@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stone Engine Web - 検証ページ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .section {
+        background: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .section h2 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #4CAF50;
+        padding-bottom: 10px;
+      }
+      canvas {
+        border: 1px solid #ddd;
+        background: white;
+        margin: 10px 0;
+      }
+      .result {
+        padding: 10px;
+        background: #f9f9f9;
+        border-left: 3px solid #2196F3;
+        margin: 10px 0;
+        font-family: monospace;
+      }
+      .pass {
+        border-left-color: #4CAF50;
+        background: #e8f5e9;
+      }
+      .fail {
+        border-left-color: #f44336;
+        background: #ffebee;
+      }
+      button {
+        padding: 10px 20px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin: 5px;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 10px 0;
+      }
+      .metric {
+        padding: 15px;
+        background: #e3f2fd;
+        border-radius: 4px;
+        text-align: center;
+      }
+      .metric-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1976d2;
+      }
+      .metric-label {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧪 Stone Engine Web - 検証ページ</h1>
+    <p>Phase 1実装の品質とパフォーマンスを検証します</p>
+
+    <!-- テスト1: 基本的な表示品質 -->
+    <div class="section">
+      <h2>テスト1: 基本的な表示品質</h2>
+      <p>横書き、縦書きの基本的な表示が正しく動作するか確認</p>
+      <button onclick="runDisplayTest()">実行</button>
+      <div id="display-result"></div>
+      <canvas id="display-canvas-h" width="600" height="200"></canvas>
+      <canvas id="display-canvas-v" width="200" height="400"></canvas>
+    </div>
+
+    <!-- テスト2: 禁則処理 -->
+    <div class="section">
+      <h2>テスト2: 禁則処理</h2>
+      <p>行頭・行末禁則文字が正しく処理されるか確認</p>
+      <button onclick="runKinsokuTest()">実行</button>
+      <div id="kinsoku-result"></div>
+      <canvas id="kinsoku-canvas" width="400" height="300"></canvas>
+    </div>
+
+    <!-- テスト3: 約物処理 -->
+    <div class="section">
+      <h2>テスト3: 約物処理（Stone Mode）</h2>
+      <p>約物の幅調整が正しく動作するか確認</p>
+      <button onclick="runPunctuationTest()">実行</button>
+      <div id="punctuation-result"></div>
+      <canvas id="punctuation-canvas" width="600" height="200"></canvas>
+    </div>
+
+    <!-- テスト4: パフォーマンステスト -->
+    <div class="section">
+      <h2>テスト4: パフォーマンス（1000文字）</h2>
+      <p>目標: 初期レンダリング &lt; 100ms</p>
+      <button onclick="runPerformanceTest()">実行</button>
+      <div id="performance-result"></div>
+      <div class="metrics" id="performance-metrics"></div>
+      <canvas id="performance-canvas" width="800" height="600"></canvas>
+    </div>
+
+    <!-- テスト5: 縦中横 -->
+    <div class="section">
+      <h2>テスト5: 縦中横</h2>
+      <p>2桁数字の縦中横が正しく動作するか確認</p>
+      <button onclick="runTateChuYokoTest()">実行</button>
+      <div id="tatechuyoko-result"></div>
+      <canvas id="tatechuyoko-canvas" width="200" height="400"></canvas>
+    </div>
+
+    <!-- 総合結果 -->
+    <div class="section">
+      <h2>📊 総合結果</h2>
+      <button onclick="runAllTests()">すべてのテストを実行</button>
+      <div id="summary-result"></div>
+    </div>
+
+    <script type="module" src="/src/validation.ts"></script>
+  </body>
+</html>
