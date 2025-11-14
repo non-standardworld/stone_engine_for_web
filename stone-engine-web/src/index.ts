@@ -12,6 +12,7 @@ import { LayoutTbRl } from './layout/LayoutTbRl';
 import { CanvasRenderer } from './renderer/CanvasRenderer';
 import type { Direction, TextAlign, Size } from './core/Types';
 import { Direction as DirectionEnum } from './core/Types';
+import { PerformanceMonitor } from './utils/PerformanceMonitor';
 
 export interface StoneLabelConfig {
   fontSize?: number;
@@ -20,6 +21,7 @@ export interface StoneLabelConfig {
   textAlign?: TextAlign;
   width?: number;
   height?: number;
+  enablePerformanceMonitoring?: boolean;
 }
 
 export class StoneLabel {
@@ -28,9 +30,15 @@ export class StoneLabel {
   private layoutLrTb: LayoutLrTb;
   private layoutTbRl: LayoutTbRl;
   private renderer: CanvasRenderer;
+  private performanceMonitor: PerformanceMonitor | null = null;
 
   constructor(config?: StoneLabelConfig) {
     this.context = new Context();
+
+    // パフォーマンス計測を有効化
+    if (config?.enablePerformanceMonitoring) {
+      this.performanceMonitor = new PerformanceMonitor();
+    }
 
     // 設定を適用
     if (config) {
@@ -64,21 +72,27 @@ export class StoneLabel {
    * テキストを設定
    */
   setText(text: string): void {
+    this.performanceMonitor?.start('parse');
     this.parser.parse(text);
+    this.performanceMonitor?.end('parse');
 
     // 方向に応じてレイアウトエンジンを切り替え
+    this.performanceMonitor?.start('layout');
     if (this.context.direction === DirectionEnum.TbRl) {
       this.layoutTbRl.layout();
     } else {
       this.layoutLrTb.layout();
     }
+    this.performanceMonitor?.end('layout');
   }
 
   /**
    * Canvasに描画
    */
   render(canvas: HTMLCanvasElement): void {
+    this.performanceMonitor?.start('render');
     this.renderer.render(canvas);
+    this.performanceMonitor?.end('render');
   }
 
   /**
@@ -114,6 +128,13 @@ export class StoneLabel {
       this.layoutLrTb.layout();
     }
   }
+
+  /**
+   * パフォーマンスモニターを取得
+   */
+  getPerformanceMonitor(): PerformanceMonitor | null {
+    return this.performanceMonitor;
+  }
 }
 
 /**
@@ -145,3 +166,5 @@ export { FontManager } from './font/FontManager';
 export { UnicodeUtils } from './utils/UnicodeUtils';
 export { TextView } from './view/TextView';
 export type { TextViewConfig } from './view/TextView';
+export { PerformanceMonitor, globalPerformanceMonitor } from './utils/PerformanceMonitor';
+export { TextMetricsCache, globalTextMetricsCache } from './cache/TextMetricsCache';

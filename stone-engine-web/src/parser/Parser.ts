@@ -9,6 +9,7 @@ import { Context } from '../core/Context';
 import { Run } from '../core/Types';
 import { UnicodeUtils } from '../utils/UnicodeUtils';
 import { Punctuation } from '../punctuation/PunctuationEngine';
+import { globalTextMetricsCache } from '../cache/TextMetricsCache';
 
 export class Parser {
   constructor(private context: Context) {}
@@ -74,28 +75,20 @@ export class Parser {
   }
 
   /**
-   * Canvas TextMetricsで文字を測定
+   * Canvas TextMetricsで文字を測定（キャッシュ使用）
    */
   private measureChar(
     char: string,
     fontFamily: string,
     fontSize: number
   ): { width: number; height: number } {
-    // Canvas作成（キャッシュ可能）
-    if (!Parser.measureCanvas) {
-      Parser.measureCanvas = document.createElement('canvas');
-      Parser.measureContext = Parser.measureCanvas.getContext('2d')!;
-    }
-
-    const ctx = Parser.measureContext;
-    ctx.font = `${fontSize}px ${fontFamily}`;
-
     // 改行文字は幅0
     if (UnicodeUtils.isNewline(char)) {
       return { width: 0, height: fontSize };
     }
 
-    const metrics = ctx.measureText(char);
+    // キャッシュから取得または測定
+    const metrics = globalTextMetricsCache.measureText(char, fontFamily, fontSize);
     return {
       width: metrics.width,
       height: fontSize,
@@ -127,8 +120,4 @@ export class Parser {
       this.context.tokens.push({ runIds: currentToken });
     }
   }
-
-  // Canvas測定用のキャッシュ
-  private static measureCanvas: HTMLCanvasElement;
-  private static measureContext: CanvasRenderingContext2D;
 }
